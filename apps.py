@@ -37,35 +37,24 @@ HTML = """
     </head>
     <body>
         <div class="page home active">
-            <h1>Weather Information</h1>
-            <h2>今日の天気を知りたい場所を選択してください</h2>
-            <label for="select">prefecture:</label>
-            <select id="select">
-                <option value=""></option>
-                <option value="大阪府">大阪</option>
-                <option value="兵庫県">兵庫</option>
-            </select>
-            <button>確認する</button>
+            <h1>登録してね</h1>
+            <label for="name">Name:</label>
+            <input type="text" id="name" />
+            <label for="age">Age:</label>
+            <input type="text" id="age" />
+            <label for="zip">Zip code:</label>
+            <input type="text" id="zip" />
+            <label for="phone">Cell phone:</label>
+            <input type="text" id="phone" />
+            <button>送信</button>
         </div>
         <div class="page details">
-            <h1>Weather Information</h1>
-            <h2>
-                <span class="prefecture">now loading...</span>
-                <span class="date"></span>
-                の天気
-            </h2>
-            <img src="">
-            <h3 class="weather"></h3>
-            <p>
-                最高気温 :
-                <span class="max">now loading...</span>
-            </p>
-            <p>
-                最低気温 :
-                <span class="min">now loading...</span>
-            </p>
-            <div>
-                <a href="/">トップページに戻る</a>
+            <h1>確認してね</h1>
+            <p class="name"></p>
+            <p class="age"></p>
+            <p class="zip"></p>
+            <p class="phone"></p>
+            <a href="/">トップページに戻る</a>
             </div>
         </div>
         <script>
@@ -87,7 +76,7 @@ HTML = """
             const toDetails = (city) => {
                 cL(".details").add("active")
                 cL(".home").remove("active")
-                historyPush(`/details?city=${city}`)
+                historyPush(`/confirm.html`)
             }
 
             const renderDetails = (data) => {
@@ -100,27 +89,25 @@ HTML = """
             }
 
             on(element("button"), "click", async (e)=> {
-                const value = element("select").value
-                if(!value)
-                    return
-                toDetails(value)
-                const res = await (await fetch(`/weather?city=${value}&id=${cities[value]}`)).json()
-                renderDetails(res)
+                const name = element("#name").value
+                const age = element("#age").value
+                const zip = element("#zip").value
+                const phone = element("#phone").value
+
+                const ageRegex = /^[a-zA-Z0-9]{1,3}$/;
+                const zipRegex = /^\d{3}-?\d{4}$/;
+                const phoneRegex = /^\d{9}$/;
+
+                if (ageRegex.test(age) && zipRegex.test(zip) && phoneRegex.test(phone)) {
+                    toDetails()
+                }
             })
             on(element("a"), "click", async (e)=> {
                 backHome()
             })
 
             const inti = async () => {
-                if (location.pathname == "/details") {
-                    cL(".details").add("active")
-                    cL(".home").remove("active")
-                    const value = (new URL(location.href)).searchParams.get("city")
-                    const res = await (await fetch(`/weather?city=${value}&id=${cities[value]}`)).json()
-                    renderDetails(res)
-                    toDetails(value)
-                    return
-                }
+                
                 backHome()
             }
             inti()
